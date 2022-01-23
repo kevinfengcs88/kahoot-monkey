@@ -1,4 +1,6 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
 const nameGen = require('./nickname');
 const Kahoot = require('kahoot.js-updated');
 let bots = [];
@@ -51,11 +53,11 @@ pythonProcess.stderr.on('close', (code)=>{
 async function mainBot(url){
     const browser = await puppeteer.launch(); // {headless: false}
     const page = await browser.newPage();
-    page.setDefaultNavigationTimeout(0);    // does not solve timeout error
+    await page.setDefaultTimeout(0);
     await page.goto(url);
 
     await page.focus('input#game-input');
-    await page.keyboard.type(gamePIN);    // can change this to the URL with ?=PIN
+    await page.keyboard.type(gamePIN);    // can change this to the URL with '?=PIN'
     await page.keyboard.press('Enter');
 
     page.waitForSelector('input#nickname').then(async function(){
@@ -76,19 +78,15 @@ async function mainBot(url){
                 switch (item){
                     case 'red':
                         option = '//*[@id="root"]/div[1]/main/div[2]/div/div/button[1]';
-                        console.log('redclick(false)');
                         break;
                     case 'blue':
                         option = '//*[@id="root"]/div[1]/main/div[2]/div/div/button[2]';
-                        console.log('blueclick(true)');
                         break;
                     case 'yellow':
                         option = '//*[@id="root"]/div[1]/main/div[2]/div/div/button[3]';
-                        console.log('yellowclick');
                         break;
                     case 'green':
                         option = '//*[@id="root"]/div[1]/main/div[2]/div/div/button[4]';
-                        console.log('greenclick');
                         break;
                     default:
                         console.log('not all those who wander are lost');
@@ -99,11 +97,9 @@ async function mainBot(url){
                 switch (item){
                     case 'red':
                         option = '//*[@id="root"]/div[1]/main/div[2]/div/div/button[2]';
-                        console.log('redclick(false)');
                         break;
                     case 'blue':
                         option = '//*[@id="root"]/div[1]/main/div[2]/div/div/button[1]';
-                        console.log('blueclick(true)');
                         break;
                     default:
                         console.log('not all those who wander are lost');
@@ -116,7 +112,85 @@ async function mainBot(url){
     }
 }
 
-// additional bot types
+let perfectAnswers = [];
+
+async function scoutBot(url){
+    const browser = await puppeteer.launch(); // {headless: false}
+    const page = await browser.newPage();
+    await page.setDefaultTimeout(0);    // does not solve timeout error
+    await page.goto(url);
+
+    await page.focus('input#game-input');
+    await page.keyboard.type(gamePIN);    // can change this to the URL with ?=PIN
+    await page.keyboard.press('Enter');
+
+    page.waitForSelector('input#nickname').then(async function(){
+        await page.focus('input#nickname');
+        await page.keyboard.type('SASAGEYO');
+        await page.keyboard.press('Enter');
+    });
+
+    for (item of answers){
+        await page.waitForXPath('//*[@id="root"]/div[1]/main/div[2]/div/div/button[1]').then(async function(){
+            // t/f decision here
+            const [el] = await page.$x('//*[@id="root"]/div[1]/main/div[1]/div/div[2]/div/div/span');
+            const txt = await el.getProperty('textContent');
+            const questionType = await txt.jsonValue();
+
+            if (questionType == 'Quiz'){
+                switch (item){
+                    case 'red':
+                        perfectAnswers.push(0);
+                        break;
+                    case 'blue':
+                        perfectAnswers.push(1);
+                        break;
+                    case 'yellow':
+                        perfectAnswers.push(2);
+                        break;
+                    case 'green':
+                        perfectAnswers.push(3);
+                        break;
+                    default:
+                        console.log('not all those who wander are lost');
+                        break;
+                }
+            }
+            else if (questionType == 'True or false'){
+                switch (item){
+                    case 'red':
+                        perfectAnswers.push(1);
+                        break;
+                    case 'blue':
+                        perfectAnswers.push(0);
+                        break;
+                    default:
+                        console.log('not all those who wander are lost');
+                        break;
+                }
+            }
+        });
+    }
+}
+
+function perfectBot(pin){
+    scoutBot('https://kahoot.it/');
+    bots.push(new Kahoot);
+    bots[bots.length - 1].join(pin, 'PERFECT').catch(error=>{
+        console.log('Join failed ' + error.description + ' ' + error.status);
+    });
+    bots[bots.length - 1].on('Joined', ()=>{
+        console.log('1 perfect bot successfully joined game');
+    });
+    bots[bots.length - 1].on('QuestionStart', (question)=>{
+        for (index in perfectAnswers){
+            question.answer(perfectAnswers[index]);
+        }
+    });
+    bots[bots.length - 1].on('Disconnect', (reason)=>{
+        console.log('Disconnected due to ' + reason);
+    })
+}
 
 function diversionBots(pin){
     for (let i = 0; i < botCount; i++){
@@ -127,7 +201,6 @@ function diversionBots(pin){
         bots[i].on('Joined', ()=>{
             console.log("1 diversion bot successfully joined game");
         });
-        console.log(successes);
         bots[i].on('QuestionStart', (question)=>{
             setTimeout(function(){
                 question.answer(Math.floor(Math.random() * question.quizQuestionAnswers[question.questionIndex]));
@@ -153,5 +226,6 @@ function stallBot(pin){
 }
 
 mainBot('https://kahoot.it/');
+perfectBot(gamePIN);
 diversionBots(gamePIN);
 stallBot(gamePIN);
