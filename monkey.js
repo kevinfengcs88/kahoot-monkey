@@ -9,7 +9,7 @@ const spawn = require("child_process").spawn;
 const prompt = require("prompt-sync")({ sigint: true });
 const quizId = prompt("Enter the quiz ID of the Kahoot: ");
 const gamePIN = prompt("Enter the game PIN of the Kahoot: ");
-const botCount = prompt("Enter the number of bots you would like: ");
+const botCount = prompt("Enter the number of diversion bots you would like: ");
 const realName = prompt("Enter the nickname YOU would like to use: ");
 
 const pythonProcess = spawn('python',["./kahootparse.py", quizId]);
@@ -57,7 +57,7 @@ async function mainBot(url){
     await page.goto(url);
 
     await page.focus('input#game-input');
-    await page.keyboard.type(gamePIN);    // can change this to the URL with '?=PIN'
+    await page.keyboard.type(gamePIN);
     await page.keyboard.press('Enter');
 
     page.waitForSelector('input#nickname').then(async function(){
@@ -69,7 +69,6 @@ async function mainBot(url){
     for (item of answers){
         await page.waitForXPath('//*[@id="root"]/div[1]/main/div[2]/div/div/button[1]').then(async function(){
             let option = '';
-            // t/f decision here
             const [el] = await page.$x('//*[@id="root"]/div[1]/main/div[1]/div/div[2]/div/div/span');
             const txt = await el.getProperty('textContent');
             const questionType = await txt.jsonValue();
@@ -112,84 +111,6 @@ async function mainBot(url){
     }
 }
 
-let perfectAnswer = 0;
-
-async function scoutBot(url){
-    const browser = await puppeteer.launch(); // {headless: false}
-    const page = await browser.newPage();
-    await page.setDefaultTimeout(0);
-    await page.goto(url);
-
-    await page.focus('input#game-input');
-    await page.keyboard.type(gamePIN);    // can change this to the URL with ?=PIN
-    await page.keyboard.press('Enter');
-
-    page.waitForSelector('input#nickname').then(async function(){
-        await page.focus('input#nickname');
-        await page.keyboard.type('smartBug420');
-        await page.keyboard.press('Enter');
-    });
-
-    for (item of answers){
-        await page.waitForXPath('//*[@id="root"]/div[1]/main/div[2]/div/div/button[1]').then(async function(){
-            // t/f decision here
-            const [el] = await page.$x('//*[@id="root"]/div[1]/main/div[1]/div/div[2]/div/div/span');
-            const txt = await el.getProperty('textContent');
-            const questionType = await txt.jsonValue();
-
-            if (questionType == 'Quiz'){
-                switch (item){
-                    case 'red':
-                        perfectAnswer = 0;
-                        break;
-                    case 'blue':
-                        perfectAnswer = 1;
-                        break;
-                    case 'yellow':
-                        perfectAnswer = 2;
-                        break;
-                    case 'green':
-                        perfectAnswer = 3;
-                        break;
-                    default:
-                        console.log('not all those who wander are lost');
-                        break;
-                }
-            }
-            else if (questionType == 'True or false'){
-                switch (item){
-                    case 'red':
-                        perfectAnswer = 1;
-                        break;
-                    case 'blue':
-                        perfectAnswer = 0;
-                        break;
-                    default:
-                        console.log('not all those who wander are lost');
-                        break;
-                }
-            }
-        });
-    }
-}
-
-function perfectBot(pin){
-    scoutBot('https://kahoot.it/');
-    bots.push(new Kahoot);
-    bots[bots.length - 1].join(pin, 'illEagle1738').catch(error=>{
-        console.log('Join failed ' + error.description + ' ' + error.status);
-    });
-    bots[bots.length - 1].on('Joined', ()=>{
-        console.log('1 perfect bot successfully joined game');
-    });
-    bots[bots.length - 1].on('QuestionStart', (question)=>{
-        question.answer(perfectAnswer);
-    });
-    bots[bots.length - 1].on('Disconnect', (reason)=>{
-        console.log('Disconnected due to ' + reason);
-    })
-}
-
 function diversionBots(pin){
     for (let i = 0; i < botCount; i++){
         bots.push(new Kahoot);
@@ -225,5 +146,4 @@ function stallBot(pin){
 
 mainBot('https://kahoot.it/');
 diversionBots(gamePIN);
-perfectBot(gamePIN);
 stallBot(gamePIN);
