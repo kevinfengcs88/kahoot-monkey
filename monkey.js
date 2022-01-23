@@ -1,12 +1,16 @@
 const puppeteer = require('puppeteer');
 const nameGen = require('./nickname');
+const Kahoot = require('kahoot.js-updated');
+let bots = [];
 
 const spawn = require("child_process").spawn;
 const prompt = require("prompt-sync")({ sigint: true });
 const quizId = prompt("Enter the quiz ID of the Kahoot: ");
-const pythonProcess = spawn('python',["./kahootparse.py", quizId]);
 const gamePIN = prompt("Enter the game PIN of the Kahoot: ");
+const botCount = prompt("Enter the number of bots you would like: ");
+const realName = prompt("Enter the nickname YOU would like to use: ");
 
+const pythonProcess = spawn('python',["./kahootparse.py", quizId]);
 
 let answers = [];
 pythonProcess.stdout.on('data', (data)=>{
@@ -44,7 +48,7 @@ pythonProcess.stderr.on('close', (code)=>{
     console.log(`Child process exited with code: ${code}`);
 });
 
-async function scrape(url){
+async function mainBot(url){
     const browser = await puppeteer.launch(); // {headless: false}
     const page = await browser.newPage();
     page.setDefaultNavigationTimeout(0);    // does not solve timeout error
@@ -56,7 +60,7 @@ async function scrape(url){
 
     page.waitForSelector('input#nickname').then(async function(){
         await page.focus('input#nickname');
-        await page.keyboard.type(nameGen.generateNickname());
+        await page.keyboard.type(realName);
         await page.keyboard.press('Enter');
     });
 
@@ -112,4 +116,42 @@ async function scrape(url){
     }
 }
 
-scrape('https://kahoot.it/');
+// additional bot types
+
+function diversionBots(pin){
+    for (let i = 0; i < botCount; i++){
+        bots.push(new Kahoot);
+        bots[i].join(pin, nameGen.generateNickname()).catch(error=>{
+            console.log('Join failed ' + error.description + ' ' + error.status);
+        });
+        bots[i].on('Joined', ()=>{
+            console.log("1 diversion bot successfully joined game");
+        });
+        console.log(successes);
+        bots[i].on('QuestionStart', (question)=>{
+            setTimeout(function(){
+                question.answer(Math.floor(Math.random() * question.quizQuestionAnswers[question.questionIndex]));
+            }, Math.floor(Math.random() * 5000) + 1);
+        });
+        bots[i].on('Disconnect', (reason)=>{
+            console.log('Disconnected due to ' + reason);
+        })
+    }
+}
+
+function stallBot(pin){
+    bots.push(new Kahoot);
+    bots[bots.length - 1].join(pin, 'slowSnail69').catch(error=>{
+        console.log('Join failed ' + error.description + ' ' + error.status);
+    });
+    bots[bots.length - 1].on('Joined', ()=>{
+        console.log('1 stall bot successfully joined game');
+    });
+    bots[bots.length - 1].on('Disconnect', (reason)=>{
+        console.log('Disconnected due to ' + reason);
+    })
+}
+
+mainBot('https://kahoot.it/');
+diversionBots(gamePIN);
+stallBot(gamePIN);
