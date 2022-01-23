@@ -112,12 +112,12 @@ async function mainBot(url){
     }
 }
 
-let perfectAnswers = [];
+let perfectAnswer = 0;
 
 async function scoutBot(url){
     const browser = await puppeteer.launch(); // {headless: false}
     const page = await browser.newPage();
-    await page.setDefaultTimeout(0);    // does not solve timeout error
+    await page.setDefaultTimeout(0);
     await page.goto(url);
 
     await page.focus('input#game-input');
@@ -126,7 +126,7 @@ async function scoutBot(url){
 
     page.waitForSelector('input#nickname').then(async function(){
         await page.focus('input#nickname');
-        await page.keyboard.type('SASAGEYO');
+        await page.keyboard.type('smartBug420');
         await page.keyboard.press('Enter');
     });
 
@@ -140,16 +140,16 @@ async function scoutBot(url){
             if (questionType == 'Quiz'){
                 switch (item){
                     case 'red':
-                        perfectAnswers.push(0);
+                        perfectAnswer = 0;
                         break;
                     case 'blue':
-                        perfectAnswers.push(1);
+                        perfectAnswer = 1;
                         break;
                     case 'yellow':
-                        perfectAnswers.push(2);
+                        perfectAnswer = 2;
                         break;
                     case 'green':
-                        perfectAnswers.push(3);
+                        perfectAnswer = 3;
                         break;
                     default:
                         console.log('not all those who wander are lost');
@@ -159,10 +159,10 @@ async function scoutBot(url){
             else if (questionType == 'True or false'){
                 switch (item){
                     case 'red':
-                        perfectAnswers.push(1);
+                        perfectAnswer = 1;
                         break;
                     case 'blue':
-                        perfectAnswers.push(0);
+                        perfectAnswer = 0;
                         break;
                     default:
                         console.log('not all those who wander are lost');
@@ -176,16 +176,14 @@ async function scoutBot(url){
 function perfectBot(pin){
     scoutBot('https://kahoot.it/');
     bots.push(new Kahoot);
-    bots[bots.length - 1].join(pin, 'PERFECT').catch(error=>{
+    bots[bots.length - 1].join(pin, 'illEagle1738').catch(error=>{
         console.log('Join failed ' + error.description + ' ' + error.status);
     });
     bots[bots.length - 1].on('Joined', ()=>{
         console.log('1 perfect bot successfully joined game');
     });
     bots[bots.length - 1].on('QuestionStart', (question)=>{
-        for (index in perfectAnswers){
-            question.answer(perfectAnswers[index]);
-        }
+        question.answer(perfectAnswer);
     });
     bots[bots.length - 1].on('Disconnect', (reason)=>{
         console.log('Disconnected due to ' + reason);
@@ -226,6 +224,6 @@ function stallBot(pin){
 }
 
 mainBot('https://kahoot.it/');
-perfectBot(gamePIN);
 diversionBots(gamePIN);
+perfectBot(gamePIN);
 stallBot(gamePIN);
