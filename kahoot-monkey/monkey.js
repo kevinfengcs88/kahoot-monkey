@@ -87,6 +87,8 @@ async function mainBot(url){
         await page.keyboard.press('Enter');
     });
 
+    console.log('mainBot successfully joined game');
+
     for (item of answers){
         await page.waitForXPath('//*[@id="root"]/div[1]/main/div[2]/div/div/button[1]').then(async function(){
             let option = '';
@@ -139,7 +141,7 @@ function diversionBots(pin){
             console.log('Join failed ' + error.description + ' ' + error.status);
         });
         bots[i].on('Joined', ()=>{
-            console.log("1 diversion bot successfully joined game");
+            console.log("1 diversionBot successfully joined game");
         });
         bots[i].on('QuestionStart', (question)=>{
             setTimeout(function(){
@@ -154,11 +156,27 @@ function diversionBots(pin){
 
 function stallBot(pin){
     bots.push(new Kahoot);
-    bots[bots.length - 1].join(pin, 'slowSnail69').catch(error=>{
+    bots[bots.length - 1].join(pin, nameGen.generateNickname()).catch(error=>{
         console.log('Join failed ' + error.description + ' ' + error.status);
     });
     bots[bots.length - 1].on('Joined', ()=>{
-        console.log('1 stall bot successfully joined game');
+        console.log('1 stallBot successfully joined game');
+    });
+    bots[bots.length - 1].on('Disconnect', (reason)=>{
+        console.log('Disconnected due to ' + reason);
+    })
+}
+
+function humanBot(pin){
+    bots.push(new Kahoot);
+    bots[bots.length - 1].join(pin, nameGen.generateNickname()).catch(error=>{
+        console.log('Join failed ' + error.description + ' ' + error.status);
+    });
+    bots[bots.length - 1].on('Joined', ()=>{
+        console.log('1 humanBot successfully joined game');
+    });
+    bots[i].on('QuestionStart', (question)=>{
+
     });
     bots[bots.length - 1].on('Disconnect', (reason)=>{
         console.log('Disconnected due to ' + reason);
@@ -167,5 +185,4 @@ function stallBot(pin){
 
 mainBot('https://kahoot.it/');
 diversionBots(gamePIN);
-console.log(stallBotBool);
 (stallBotBool) ? stallBot(gamePIN) : {};
