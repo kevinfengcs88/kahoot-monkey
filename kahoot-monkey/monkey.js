@@ -11,7 +11,6 @@ const prompt = require("prompt-sync")({ sigint: true });
 console.log('----------------------------------------');
 console.log('Welcome to Kahoot Monkey!');
 console.log('----------------------------------------');
-console.log();
 console.log('Kahoot Monkey supports several types of bots with different behaviors:');
 console.log('1. mainBot - The bot that your name should go under, gets a perfect score by answering each question correctly in 0.1s');
 console.log('2. diversionBot - Bots that answer each question randomly in less than 5.0s');
@@ -22,6 +21,7 @@ const gamePIN = prompt('Enter the game PIN of the Kahoot: ');
 const realName = prompt('Enter the nickname YOU would like to use: ');
 const botCount = prompt('Enter the number of diversion bots you would like: ');
 const stallBotString = prompt('Would you like to include a stallBot [y/n]? ');
+console.log('----------------------------------------');
 const pythonProcess = spawn('python',["./kahootparse.py", quizId]);
 
 let stallBotBool;
@@ -55,9 +55,12 @@ pythonProcess.stdout.on('data', (data)=>{
                 curr += char;
         }
     }
+    console.log('Cheatsheet (remember that red and blue switch sides on true/false questions):');
+    let questionNumber = 0;
     for (item of answers){
-        console.log(item);
+        console.log(++questionNumber + '. ' + item);
     }
+    console.log('----------------------------------------');
 });
 
 pythonProcess.stderr.on('data', (data)=>{
@@ -164,5 +167,5 @@ function stallBot(pin){
 
 mainBot('https://kahoot.it/');
 diversionBots(gamePIN);
+console.log(stallBotBool);
 (stallBotBool) ? stallBot(gamePIN) : {};
-stallBot(gamePIN);
