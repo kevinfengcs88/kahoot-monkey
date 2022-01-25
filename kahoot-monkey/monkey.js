@@ -7,12 +7,30 @@ let bots = [];
 
 const spawn = require("child_process").spawn;
 const prompt = require("prompt-sync")({ sigint: true });
-const quizId = prompt("Enter the quiz ID of the Kahoot: ");
-const gamePIN = prompt("Enter the game PIN of the Kahoot: ");
-const botCount = prompt("Enter the number of diversion bots you would like: ");
-const realName = prompt("Enter the nickname YOU would like to use: ");
 
+console.log('----------------------------------------');
+console.log('Welcome to Kahoot Monkey!');
+console.log('----------------------------------------');
+console.log();
+console.log('Kahoot Monkey supports several types of bots with different behaviors:');
+console.log('1. mainBot - The bot that your name should go under, gets a perfect score by answering each question correctly in 0.1s');
+console.log('2. diversionBot - Bots that answer each question randomly in less than 5.0s');
+console.log("3. stallBot - A bot that doesn't answer any questions, thus, stalling out each question to the time limit (or until the instructor hits 'skip')");
+console.log('----------------------------------------');
+const quizId = prompt('Enter the quiz ID of the Kahoot: ');
+const gamePIN = prompt('Enter the game PIN of the Kahoot: ');
+const realName = prompt('Enter the nickname YOU would like to use: ');
+const botCount = prompt('Enter the number of diversion bots you would like: ');
+const stallBotString = prompt('Would you like to include a stallBot [y/n]? ');
 const pythonProcess = spawn('python',["./kahootparse.py", quizId]);
+
+let stallBotBool;
+if (stallBotString.toUpperCase() == 'Y'){
+    stallBotBool = true;
+}
+else{   // assumes that invalid inputs should also not include a stallBot
+    stallBotBool = false;
+}
 
 let answers = [];
 pythonProcess.stdout.on('data', (data)=>{
@@ -146,4 +164,5 @@ function stallBot(pin){
 
 mainBot('https://kahoot.it/');
 diversionBots(gamePIN);
+(stallBotBool) ? stallBot(gamePIN) : {};
 stallBot(gamePIN);
