@@ -1,7 +1,6 @@
-const puppeteer = require('puppeteer');
-// const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-// // require('puppeteer-extra-plugin-stealth/evasions/chrome.app'); NOT WORKING
-// puppeteer.use(StealthPlugin());
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
 const nameGen = require('./nickname');
 const Kahoot = require('kahoot.js-updated');
 let bots = [];
@@ -52,7 +51,7 @@ pythonProcess.stderr.on('close', (code)=>{
 });
 
 async function mainBot(url){
-    const browser = await puppeteer.launch(); // {headless: false} {executablePath: './node_modules/puppeteer/.local-chromium/win64-950341/chrome-win/chrome.exe'}
+    const browser = await puppeteer.launch(); // {headless: false}
     const page = await browser.newPage();
     await page.setDefaultTimeout(0);
     await page.goto(url);
@@ -107,7 +106,7 @@ async function mainBot(url){
                 }
             }
             const elements = await page.$x(option);
-            await elements[0].click();
+            await elements[0].click();  // weird bug here
         });
     }
 }
