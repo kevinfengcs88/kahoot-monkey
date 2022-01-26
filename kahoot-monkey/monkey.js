@@ -154,6 +154,51 @@ function diversionBots(pin){
     }
 }
 
+let indexedAnswers = [];
+for (item of answers){
+    switch (item){
+        case 'red':
+            indexedAnswers.push(0);
+            break;
+        case 'blue':
+            indexedAnswers.push(1);
+            break;
+        case 'yellow':
+            indexedAnswers.push(2);
+            break;
+        case 'green':
+            indexedAnswers.push(3);
+            break;
+        default:
+            console.log('not all those who wander are lost');
+            break;
+    }
+}
+
+let idx = 0;
+function humanBots(pin){    // just like a human, they get all true/false questions wrong :)
+    for (let i = 0; i < botCount; i++){ // change botCount here later
+        bots.push(new Kahoot);
+        bots[i].join(pin, nameGen.generateNickname()).catch(error=>{
+            console.log('Join failed ' + error.description + ' ' + error.status);
+        });
+        bots[i].on('Joined', ()=>{
+            console.log("1 humanBot successfully joined game");
+        });
+        bots[i].on('QuestionStart', (question)=>{
+            setTimeout(function(){
+                question.answer(indexedAnswers[idx]);
+            }, Math.floor(Math.random() * 5000) + 1);
+            console.log(idx);
+            console.log(indexedAnswers[idx]);
+            idx++;
+        });
+        bots[i].on('Disconnect', (reason)=>{
+            console.log('Disconnected due to ' + reason);
+        })
+    }
+}
+
 function stallBot(pin){
     bots.push(new Kahoot);
     bots[bots.length - 1].join(pin, nameGen.generateNickname()).catch(error=>{
@@ -167,22 +212,8 @@ function stallBot(pin){
     })
 }
 
-function humanBot(pin){
-    bots.push(new Kahoot);
-    bots[bots.length - 1].join(pin, nameGen.generateNickname()).catch(error=>{
-        console.log('Join failed ' + error.description + ' ' + error.status);
-    });
-    bots[bots.length - 1].on('Joined', ()=>{
-        console.log('1 humanBot successfully joined game');
-    });
-    bots[i].on('QuestionStart', (question)=>{
-
-    });
-    bots[bots.length - 1].on('Disconnect', (reason)=>{
-        console.log('Disconnected due to ' + reason);
-    })
-}
 
 mainBot('https://kahoot.it/');
 diversionBots(gamePIN);
+// humanBots(gamePIN);
 (stallBotBool) ? stallBot(gamePIN) : {};
