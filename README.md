@@ -9,9 +9,22 @@ Kahoot Monkey doesn't just flood your games with useless bots that don't answer 
 
 - mainBot is entered into the game under the name 'Aragorn'
 - 10 diversionBots are entered into the game with randomly generated nicknames to divert attention away from mainBot
-- A stallBot is entered into the game to stall out questions to take away attention from the diversionBots consistent answering behavior
+- A stallBot is entered into the game to stall out questions, making the consistent answering behavior of the diversionBots less obvious
+
+## How to use
+Make sure to have Node.js installed and set up your directory as such:
+```
+📦kahoot-monkey
+ ┣ 📂monkey
+ ┃ ┣ 📜kahootparse.py
+ ┃ ┣ 📜monkey.js
+ ┃ ┗ 📜nickname.js
+ ┣ 📂node_modules
+ ┣ 📜package-lock.json
+ ┗ 📜package.json
+ ```
 
 ## Limitations
-Kahoot Monkey only works for public games and is designed for traditional game formats that involve multiple choice and true/false questions (which is a majority of Kahoot games).
+Kahoot Monkey only works for public games and is designed for traditional game formats that involve multiple choice and true/false questions (which is the majority of Kahoot games).
 
 
