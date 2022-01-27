@@ -29,7 +29,7 @@ Kahoot Monkey doesn't just flood your games with useless bots that don't answer 
 `npm install puppeteer-extra`</br>
 `npm install puppeteer-extra-plugin-stealth`</br>
 `npm install kahoot.js-updated@2.4.0`</br>
-`npm install puppeteer`
+`npm install prompt-sync`
 
 ## Limitations
 Kahoot Monkey only works for public games and is designed for traditional game formats that involve multiple choice and true/false questions (which is the majority of Kahoot games). Kahoot Monkey also doesn't check game servers to determine which quiz ID and game PIN to use; this information must be obtained through manual scribing or copy-pasting.
