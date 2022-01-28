@@ -31,7 +31,10 @@ Kahoot Monkey doesn't just flood your games with useless bots that don't answer 
 `npm install kahoot.js-updated@2.4.0`</br>
 `npm install prompt-sync`
 
+4. Change the director to the `monkey` folder which contains the main script, `monkey.js`
+5. Run the script with Node.js: `node monkey`
+
 ## Limitations
-Kahoot Monkey only works for public games and is designed for traditional game formats that involve multiple choice and true/false questions (which is the majority of Kahoot games). Kahoot Monkey also doesn't check game servers to determine which quiz ID and game PIN to use; this information must be obtained through manual scribing or copy-pasting.
+Kahoot Monkey only works for public games and is designed for traditional game formats that involve multiple choice and true/false questions (which is the majority of Kahoot games). Kahoot Monkey also doesn't check game servers to determine which quiz ID and game PIN to use; this information must be obtained through manual scribing or copy pasting.
 
 
