@@ -34,7 +34,8 @@ Kahoot Monkey doesn't just flood your games with useless bots that don't answer 
 4. Change the directory to the `monkey` folder which contains the main script, `monkey.js`
 5. Run the script with Node.js: `node monkey`
 
-## Limitations
+## Final notes
 Kahoot Monkey only works for public games and is designed for traditional game formats that involve multiple choice and true/false questions (which is the majority of Kahoot games). Kahoot Monkey also doesn't check game servers to determine which quiz ID and game PIN to use; this information must be obtained through manual scribing or copy pasting.
 
+Special thanks to @DaniellTa for the short Python script!
 
